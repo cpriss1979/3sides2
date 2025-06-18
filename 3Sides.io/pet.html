@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Pet 🌾</title>
+  <style>
+    body {
+      font-family: 'Patrick Hand', cursive;
+      background: #e0f7fa;
+      color: #2f3b5c;
+      text-align: center;
+      padding: 2rem;
+    }
+    .pet-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    button {
+      font-size: 1.1rem;
+      margin: 0.3rem;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: #89cbd4;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:disabled {
+      background: #ccc !important;
+      color: #666 !important;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .thankMsg {
+      display: none;
+      font-style: italic;
+      color: #4682b4;
+      margin-top: 0.5rem;
+    }
+    #petImage {
+      width: 150px;
+      margin-bottom: 1rem;
+    }
+    #badgeContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .badge {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      background: #ffffffaa;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #444;
+    }
+    .badge.locked {
+      opacity: 0.4;
+      filter: grayscale(100%);
+    }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+#petImage {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+  </style>
+</head>
+<body>
+  <div class="pet-container">
+    <h1>🌟 Care for Your Pet Friend 🌟</h1>
+    <img id="petImage" src="pet-baby.png" alt="Your Pet" />
+    <p id="petMessage">Hi, I'm your wellness buddy! Let's grow together 🌱</p>
+
+    <div class="section" id="journalSection">
+      <h3>Journal To Feed Your Pet</h3>
+      <a href="journal.html"><button id="journalBtn">📝 Go Journal</button></a>
+      <button id="feedPetBtn" onclick="feedPet()" disabled>🍽️ Feed Pet</button>
+      <p id="feedMsg" class="thankMsg">Thanks for journaling today, your mind thanks you! 🐾</p>
+    </div>
+
+    <div class="section">
+      <h3>Did you drink water today?</h3>
+      <button id="waterYesBtn" onclick="waterPet()">✅ Yes</button>
+      <button id="waterNoBtn" onclick="alert('You deserve kindness 💖')">❌ No</button>
+      <p id="waterMsg" class="thankMsg">Thanks for drinking water today, your body thanks you!</p>
+    </div>
+
+    <div class="section">
+      <h3>Did you do something kind for yourself today?</h3>
+      <button id="bathYesBtn" onclick="bathePet()">✅ Yes</button>
+      <button id="bathNoBtn" onclick="alert('You deserve kindness 💖')">❌ No</button>
+      <p id="bathMsg" class="thankMsg">Thanks for being kind to yourself today, you deserve it!</p>
+    </div>
+
+    <div class="section" id="badgeWall">
+      <h3>🏅 My Badges</h3>
+      <div id="badgeContainer"></div>
+    </div>
+  </div>
+
+  <button onclick="resetPet()">🔄 Reset Pet</button>
+
+  <script>
+    const today = new Date().toISOString().split('T')[0];
+    let petLevel = parseInt(localStorage.getItem("petLevel")) || 0;
+    let careStreak = parseInt(localStorage.getItem("careStreak")) || 0;
+    let petStatus = JSON.parse(localStorage.getItem("petStatus")) || { fed: false, watered: false, bathed: false };
+    let badges = JSON.parse(localStorage.getItem("badges") || "[]");
+
+    function updatePetImage() {
+      const petImg = document.getElementById("petImage");
+      if (petLevel >= 4) petImg.src = "pet-adult.png";
+      else if (petLevel >= 3) petImg.src = "pet-teen.png";
+      else if (petLevel >= 2) petImg.src = "pet-child.png";
+      else petImg.src = "pet-baby.png";
+    }
+
+    function awardBadge(name, message) {
+      if (!badges.includes(name)) {
+        badges.push(name);
+        localStorage.setItem("badges", JSON.stringify(badges));
+        alert(`🏅 ${message}`);
+        showBadges();
+      }
+    }
+
+    function feedPet() {
+      if (localStorage.getItem("petFedToday") === today) return alert("Your pet has already been fed today! 🐾");
+      petStatus.fed = true;
+      localStorage.setItem("petStatus", JSON.stringify(petStatus));
+      localStorage.setItem("petFedToday", today);
+      document.getElementById("feedPetBtn").disabled = true;
+      document.getElementById("feedMsg").style.display = "block";
+      careForPet('fed');
+    }
+
+    function waterPet() {
+      if (localStorage.getItem("canWaterToday") === today) return alert("Your pet has already been watered today!");
+      petStatus.watered = true;
+      localStorage.setItem("petStatus", JSON.stringify(petStatus));
+      localStorage.setItem("canWaterToday", today);
+      document.getElementById("waterYesBtn").disabled = true;
+      document.getElementById("waterNoBtn").disabled = true;
+      document.getElementById("waterMsg").style.display = "block";
+      careForPet('watered');
+    }
+
+    function bathePet() {
+      if (localStorage.getItem("canBatheToday") === today) return alert("Your pet has already been bathed today!");
+      petStatus.bathed = true;
+      localStorage.setItem("petStatus", JSON.stringify(petStatus));
+      localStorage.setItem("canBatheToday", today);
+      document.getElementById("bathYesBtn").disabled = true;
+      document.getElementById("bathNoBtn").disabled = true;
+      document.getElementById("bathMsg").style.display = "block";
+      careForPet('bathed');
+    }
+
+    function careForPet(action) {
+      const msg = document.getElementById("petMessage");
+      msg.textContent = {
+        fed: "Yum! Thank you for feeding me! 🍽️",
+        watered: "So refreshing! Thank you for the water! 💧",
+        bathed: "All clean and sparkly now! 🧽"
+      }[action];
+
+      if (petStatus.fed && petStatus.watered && petStatus.bathed && canAdvanceToday()) {
+        careStreak++;
+        petLevel++;
+        localStorage.setItem('lastAdvanceDate', today);
+        localStorage.setItem("careStreak", careStreak);
+        localStorage.setItem("petLevel", petLevel);
+        petStatus = { fed: false, watered: false, bathed: false };
+        localStorage.setItem("petStatus", JSON.stringify(petStatus));
+        updatePetImage();
+        alert("Great job! Your pet grew today 🌱");
+
+        if (careStreak === 1) awardBadge("pawprint", "You earned the 'First Pet Care' badge! 🐾");
+        if (careStreak === 7) awardBadge("flower", "You earned the '1 Week' badge! 🌸");
+        if (careStreak === 30) awardBadge("gem", "You earned the '1 Month' badge! 💎");
+        if (careStreak === 90) awardBadge("crown", "You earned the '3 Month' badge! 👑");
+      }
+    }
+
+    function canAdvanceToday() {
+      return localStorage.getItem('lastAdvanceDate') !== today;
+    }
+
+    function resetPet() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    function showBadges() {
+      const badgeContainer = document.getElementById("badgeContainer");
+      const earned = JSON.parse(localStorage.getItem("badges") || "[]");
+      const allBadges = [
+        { key: "journalFirst", emoji: "📝", label: "First Journal" },
+        { key: "pawprint", emoji: "🐾", label: "First Pet Care" },
+        { key: "flower", emoji: "🌸", label: "1 Week" },
+        { key: "gem", emoji: "💎", label: "1 Month" },
+        { key: "crown", emoji: "👑", label: "3 Months" }
+      ];
+      badgeContainer.innerHTML = '';
+      allBadges.forEach(badge => {
+        const div = document.createElement("div");
+        div.className = "badge" + (!earned.includes(badge.key) ? " locked" : "");
+        div.innerHTML = `<div>${badge.emoji}</div><small>${badge.label}</small>`;
+        badgeContainer.appendChild(div);
+      });
+    }
+
+    window.onload = () => {
+      updatePetImage();
+      showBadges();
+      if (localStorage.getItem("petFedToday") === today) {
+        document.getElementById("feedPetBtn").disabled = true;
+        document.getElementById("feedMsg").style.display = "block";
+      } else if (localStorage.getItem("canFeedToday") === today) {
+        document.getElementById("feedPetBtn").disabled = false;
+      }
+      if (localStorage.getItem("canWaterToday") === today) {
+        document.getElementById("waterYesBtn").disabled = true;
+        document.getElementById("waterNoBtn").disabled = true;
+        document.getElementById("waterMsg").style.display = "block";
+      }
+      if (localStorage.getItem("canBatheToday") === today) {
+        document.getElementById("bathYesBtn").disabled = true;
+        document.getElementById("bathNoBtn").disabled = true;
+        document.getElementById("bathMsg").style.display = "block";
+      }
+    };
+  </script>
+</body>
+</html>
