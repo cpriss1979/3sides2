@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <!-- Main CSS File -->
+        <link rel="stylesheet" href="style.css">
+
   <title>Letter to Future Me</title>
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
   <style>
@@ -164,7 +167,6 @@ body {
       <div>
         <button type="button" onclick="saveLetter()">💾 </button>
     
-        <button type="button" onclick="deleteLetter()">🗑️ </button>
       </div>
 
       <details>
@@ -182,20 +184,22 @@ body {
       <h3>📝 Your Message to Yourself</h3>
       <p id="letterDisplay"></p>
     </div> 
+        <button type="button" onclick="deleteLetter()">🗑️ </button>
 
 </div>
+
 
 <div class="torn-paper-divider"></div>
 
 
-< <footer class="bottom-nav">
-  <a href="index.html" class="nav-icon">🏠<span>Home</span></a>
-  <a href="toolkit-hub.html" class="nav-icon">🧰<span>Toolkit</span></a>
-  <a href="wellness.html" class="nav-icon">💖<span>Wellness</span></a>
-  <a href="important-numbers.html" class="nav-icon">🆘<span>Help</span></a>
-</footer>
-
-
+  <footer class="bottom-nav">
+    <a href="index.html" class="nav-icon">🏠<span>Home</span></a>
+    <a href="toolkit-hub.html" class="nav-icon">🧰<span>Toolkit</span></a>
+    <a href="wellness.html" class="nav-icon">💖<span>Wellness</span></a>
+    <a href="pet.html" class="nav-icon">🐾<span>Pet</span></a>
+    <a href="important-numbers.html" class="nav-icon">🆘<span>Help</span></a>
+  </footer>
+  
   <script>
     // Load letter on page load
     window.onload = function() {
